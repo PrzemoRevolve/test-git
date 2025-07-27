@@ -16,19 +16,22 @@
     "check:fix": "biome check --write src/"
   },
   "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "pg": "^8.11.3",
-    "cors": "^2.8.5",
-    "dotenv": "^16.3.1"
+    "uuid": "^11.1.0",
+    "zod": "^4.0.10"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1",
-    "typescript": "^5.2.2",
-    "ts-node": "^10.9.1",
-    "@types/node": "^20.8.0",
-    "@types/express": "^4.17.20",
-    "@types/pg": "^8.10.7",
+    "@biomejs/biome": "^1.9.4",
+    "@playwright/test": "^1.54.1",
     "@types/cors": "^2.8.14",
-    "@biomejs/biome": "^1.9.4"
+    "@types/express": "^4.17.20",
+    "@types/node": "^20.8.0",
+    "@types/pg": "^8.10.7",
+    "nodemon": "^3.0.1",
+    "ts-node": "^10.9.1",
+    "typescript": "^5.2.2"
   }
 }

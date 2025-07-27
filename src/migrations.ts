@@ -1,7 +1,7 @@
-import { promises as fs } from 'node:fs';
-import * as path from 'node:path';
-import type { Pool } from 'pg';
-import type { Migration } from './types';
+import { promises as fs } from "node:fs";
+import * as path from "node:path";
+import type { Pool } from "pg";
+import type { Migration } from "./types";
 
 export class MigrationRunner {
   private pool: Pool;
@@ -9,12 +9,12 @@ export class MigrationRunner {
 
   constructor(pool: Pool) {
     this.pool = pool;
-    this.migrationsDir = path.join(__dirname, '..', 'migrations');
+    this.migrationsDir = path.join(__dirname, "..", "migrations");
   }
 
   async runMigrations(): Promise<void> {
     try {
-      console.log('Starting migration process...');
+      console.log("Starting migration process...");
 
       // Wait for database to be ready
       await this.waitForDatabase();
@@ -22,10 +22,12 @@ export class MigrationRunner {
       const migrationFiles = await this.getMigrationFiles();
       const executedMigrations = await this.getExecutedMigrations();
 
-      const pendingMigrations = migrationFiles.filter(file => !executedMigrations.includes(file));
+      const pendingMigrations = migrationFiles.filter(
+        (file) => !executedMigrations.includes(file),
+      );
 
       if (pendingMigrations.length === 0) {
-        console.log('No pending migrations found.');
+        console.log("No pending migrations found.");
         return;
       }
 
@@ -35,9 +37,9 @@ export class MigrationRunner {
         await this.executeMigration(migrationFile);
       }
 
-      console.log('All migrations completed successfully!');
+      console.log("All migrations completed successfully!");
     } catch (error) {
-      console.error('Migration failed:', error);
+      console.error("Migration failed:", error);
       throw error;
     }
   }
@@ -48,15 +50,19 @@ export class MigrationRunner {
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
-        await this.pool.query('SELECT 1');
-        console.log('Database connection established.');
+        await this.pool.query("SELECT 1");
+        console.log("Database connection established.");
         return;
       } catch (_error) {
-        console.log(`Database connection attempt ${attempt}/${maxRetries} failed. Retrying in ${retryDelay}ms...`);
+        console.log(
+          `Database connection attempt ${attempt}/${maxRetries} failed. Retrying in ${retryDelay}ms...`,
+        );
         if (attempt === maxRetries) {
-          throw new Error('Failed to connect to database after maximum retries');
+          throw new Error(
+            "Failed to connect to database after maximum retries",
+          );
         }
-        await new Promise(resolve => setTimeout(resolve, retryDelay));
+        await new Promise((resolve) => setTimeout(resolve, retryDelay));
       }
     }
   }
@@ -64,10 +70,14 @@ export class MigrationRunner {
   private async getMigrationFiles(): Promise<string[]> {
     try {
       const files = await fs.readdir(this.migrationsDir);
-      return files.filter(file => file.endsWith('.sql')).sort();
+      return files.filter((file) => file.endsWith(".sql")).sort();
     } catch (error) {
-      if (error instanceof Error && 'code' in error && error.code === 'ENOENT') {
-        console.log('Migrations directory not found. No migrations to run.');
+      if (
+        error instanceof Error &&
+        "code" in error &&
+        error.code === "ENOENT"
+      ) {
+        console.log("Migrations directory not found. No migrations to run.");
         return [];
       }
       throw error;
@@ -77,11 +87,11 @@ export class MigrationRunner {
   private async getExecutedMigrations(): Promise<string[]> {
     try {
       const result = await this.pool.query<Migration>(
-        'SELECT filename FROM migrations ORDER BY filename'
+        "SELECT filename FROM migrations ORDER BY filename",
       );
-      return result.rows.map(row => row.filename);
+      return result.rows.map((row) => row.filename);
     } catch (error) {
-      if (error instanceof Error && 'code' in error && error.code === '42P01') {
+      if (error instanceof Error && "code" in error && error.code === "42P01") {
         return [];
       }
       throw error;
@@ -93,20 +103,22 @@ export class MigrationRunner {
 
     try {
       const migrationPath = path.join(this.migrationsDir, filename);
-      const migrationSQL = await fs.readFile(migrationPath, 'utf8');
+      const migrationSQL = await fs.readFile(migrationPath, "utf8");
 
-      await this.pool.query('BEGIN');
+      await this.pool.query("BEGIN");
 
       try {
         await this.pool.query(migrationSQL);
 
-        await this.pool.query('INSERT INTO migrations (filename) VALUES ($1)', [filename]);
+        await this.pool.query("INSERT INTO migrations (filename) VALUES ($1)", [
+          filename,
+        ]);
 
-        await this.pool.query('COMMIT');
+        await this.pool.query("COMMIT");
 
         console.log(`Migration completed: ${filename}`);
       } catch (error) {
-        await this.pool.query('ROLLBACK');
+        await this.pool.query("ROLLBACK");
         throw error;
       }
     } catch (error) {
