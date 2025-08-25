@@ -24,7 +24,6 @@ COPY frontend/src ./frontend/src
 COPY frontend/public ./frontend/public
 COPY frontend/index.html ./frontend/
 COPY frontend/biome.json ./frontend/
-COPY shared ./shared
 
 # Build everything
 RUN npm run build
@@ -35,7 +34,7 @@ WORKDIR /app
 
 COPY backend/package*.json ./
 
-RUN npm ci --only=production
+RUN npm install --only=production
 
 COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/migrations ./migrations

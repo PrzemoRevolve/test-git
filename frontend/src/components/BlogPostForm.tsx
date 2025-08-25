@@ -6,7 +6,7 @@ import type {
   User,
   CreateBlogPostRequest,
   UpdateBlogPostRequest,
-} from '../../../shared/types';
+} from '../types';
 
 const BlogPostForm: React.FC = () => {
   const { id } = useParams<{ id: string }>();

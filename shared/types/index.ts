@@ -74,3 +74,10 @@ export interface DatabaseError {
   code?: string;
   message: string;
 }
+
+export interface Message {
+  id: string;
+  text: string;
+  timestamp: Date;
+  type: 'sent' | 'received';
+}

@@ -1,8 +1,10 @@
 import path from 'node:path';
+import http from 'node:http';
 import cors from 'cors';
 import { config } from 'dotenv';
 import express, { type Request, type Response } from 'express';
 import { Pool } from 'pg';
+import { WebSocketServer, type WebSocket } from 'ws';
 import { MigrationRunner } from './migrations';
 import type { BlogPost, Comment, DatabaseConfig, User } from './types';
 
@@ -15,7 +17,7 @@ app.use(cors());
 app.use(express.json());
 
 // Serve static files from frontend build
-app.use(express.static(path.join(__dirname, '../../frontend-build')));
+app.use(express.static(path.join(__dirname, '../frontend-build')));
 
 const dbConfig: DatabaseConfig = {
   user: process.env.DB_USER || 'postgres',
@@ -308,7 +310,7 @@ app.delete('/api/comments/:id', async (req: Request, res: Response): Promise<voi
 
 // Serve React app for all non-API routes
 app.get('*', (_req: Request, res: Response) => {
-  res.sendFile(path.join(__dirname, '../../frontend-build/index.html'));
+  res.sendFile(path.join(__dirname, '../frontend-build/index.html'));
 });
 
 async function startServer(): Promise<void> {
@@ -316,8 +318,42 @@ async function startServer(): Promise<void> {
     const migrationRunner = new MigrationRunner(pool);
     await migrationRunner.runMigrations();
 
-    app.listen(port, () => {
+    // Create HTTP server
+    const server = http.createServer(app);
+
+    // Create WebSocket server
+    const wss = new WebSocketServer({ 
+      server,
+      path: '/ws'
+    });
+
+    // WebSocket connection handler
+    wss.on('connection', (ws: WebSocket) => {
+      console.log('New WebSocket connection established');
+
+      ws.on('message', async (data: Buffer) => {
+        const message = data.toString();
+        console.log('Received message:', message);
+
+        // Wait 1 second and send echo response
+        setTimeout(() => {
+          const echoResponse = `Echo: ${message}`;
+          ws.send(echoResponse);
+        }, 1000);
+      });
+
+      ws.on('close', () => {
+        console.log('WebSocket connection closed');
+      });
+
+      ws.on('error', (error: Error) => {
+        console.error('WebSocket error:', error);
+      });
+    });
+
+    server.listen(port, () => {
       console.log(`Server running on port ${port}`);
+      console.log(`WebSocket server available at ws://localhost:${port}/ws`);
     });
   } catch (error) {
     console.error('Failed to start server:', error);

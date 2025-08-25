@@ -56,25 +56,6 @@ export interface UpdateCommentRequest {
   content: string;
 }
 
-export interface DatabaseConfig {
-  user: string;
-  host: string;
-  database: string;
-  password: string;
-  port: number;
-}
-
-export interface Migration {
-  id: number;
-  filename: string;
-  executed_at: Date;
-}
-
-export interface DatabaseError {
-  code?: string;
-  message: string;
-}
-
 export interface Message {
   id: string;
   text: string;

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { blogPostsApi } from '../services/api';
-import type { BlogPost } from '../../../shared/types';
+import type { BlogPost } from '../types';
 
 const BlogPostList: React.FC = () => {
   const [posts, setPosts] = useState<BlogPost[]>([]);

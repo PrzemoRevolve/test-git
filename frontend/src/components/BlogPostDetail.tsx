@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { blogPostsApi } from '../services/api';
-import type { BlogPost, Comment } from '../../../shared/types';
+import type { BlogPost, Comment } from '../types';
 
 const BlogPostDetail: React.FC = () => {
   const { id } = useParams<{ id: string }>();
