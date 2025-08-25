@@ -52,7 +52,9 @@ export class MigrationRunner {
         console.log('Database connection established.');
         return;
       } catch (_error) {
-        console.log(`Database connection attempt ${attempt}/${maxRetries} failed. Retrying in ${retryDelay}ms...`);
+        console.log(
+          `Database connection attempt ${attempt}/${maxRetries} failed. Retrying in ${retryDelay}ms...`
+        );
         if (attempt === maxRetries) {
           throw new Error('Failed to connect to database after maximum retries');
         }

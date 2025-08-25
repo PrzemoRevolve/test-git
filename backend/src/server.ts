@@ -1,3 +1,4 @@
+import path from 'node:path';
 import cors from 'cors';
 import { config } from 'dotenv';
 import express, { type Request, type Response } from 'express';
@@ -13,6 +14,9 @@ const port = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
+// Serve static files from frontend build
+app.use(express.static(path.join(__dirname, '../../frontend-build')));
+
 const dbConfig: DatabaseConfig = {
   user: process.env.DB_USER || 'postgres',
   host: process.env.DB_HOST || 'localhost',
@@ -24,7 +28,7 @@ const dbConfig: DatabaseConfig = {
 const pool = new Pool(dbConfig);
 
 // Users endpoints
-app.get('/users', async (_req: Request, res: Response): Promise<void> => {
+app.get('/api/users', async (_req: Request, res: Response): Promise<void> => {
   try {
     const result = await pool.query<User>('SELECT * FROM users ORDER BY created_at DESC');
     res.json(result.rows);
@@ -34,7 +38,7 @@ app.get('/users', async (_req: Request, res: Response): Promise<void> => {
   }
 });
 
-app.get('/users/:id', async (req: Request, res: Response): Promise<void> => {
+app.get('/api/users/:id', async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
     const result = await pool.query<User>('SELECT * FROM users WHERE id = $1', [id]);
@@ -49,7 +53,7 @@ app.get('/users/:id', async (req: Request, res: Response): Promise<void> => {
   }
 });
 
-app.post('/users', async (req: Request, res: Response): Promise<void> => {
+app.post('/api/users', async (req: Request, res: Response): Promise<void> => {
   try {
     const { name, email }: { name: string; email: string } = req.body;
     const result = await pool.query<User>(
@@ -63,7 +67,7 @@ app.post('/users', async (req: Request, res: Response): Promise<void> => {
   }
 });
 
-app.put('/users/:id', async (req: Request, res: Response): Promise<void> => {
+app.put('/api/users/:id', async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
     const { name, email }: { name: string; email: string } = req.body;
@@ -82,7 +86,7 @@ app.put('/users/:id', async (req: Request, res: Response): Promise<void> => {
   }
 });
 
-app.delete('/users/:id', async (req: Request, res: Response): Promise<void> => {
+app.delete('/api/users/:id', async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
     const result = await pool.query<User>('DELETE FROM users WHERE id = $1 RETURNING *', [id]);
@@ -98,7 +102,7 @@ app.delete('/users/:id', async (req: Request, res: Response): Promise<void> => {
 });
 
 // Blog posts endpoints
-app.get('/blog_posts', async (_req: Request, res: Response): Promise<void> => {
+app.get('/api/blog_posts', async (_req: Request, res: Response): Promise<void> => {
   try {
     const result = await pool.query<BlogPost>(`
       SELECT bp.*, u.name as author_name 
@@ -113,7 +117,7 @@ app.get('/blog_posts', async (_req: Request, res: Response): Promise<void> => {
   }
 });
 
-app.get('/blog_posts/:id', async (req: Request, res: Response): Promise<void> => {
+app.get('/api/blog_posts/:id', async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
     const result = await pool.query<BlogPost>(
@@ -136,7 +140,7 @@ app.get('/blog_posts/:id', async (req: Request, res: Response): Promise<void> =>
   }
 });
 
-app.post('/blog_posts', async (req: Request, res: Response): Promise<void> => {
+app.post('/api/blog_posts', async (req: Request, res: Response): Promise<void> => {
   try {
     const { title, content, user_id }: { title: string; content: string; user_id: number } =
       req.body;
@@ -151,7 +155,7 @@ app.post('/blog_posts', async (req: Request, res: Response): Promise<void> => {
   }
 });
 
-app.put('/blog_posts/:id', async (req: Request, res: Response): Promise<void> => {
+app.put('/api/blog_posts/:id', async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
     const { title, content }: { title: string; content: string } = req.body;
@@ -170,7 +174,7 @@ app.put('/blog_posts/:id', async (req: Request, res: Response): Promise<void> =>
   }
 });
 
-app.delete('/blog_posts/:id', async (req: Request, res: Response): Promise<void> => {
+app.delete('/api/blog_posts/:id', async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
     const result = await pool.query<BlogPost>('DELETE FROM blog_posts WHERE id = $1 RETURNING *', [
@@ -188,7 +192,7 @@ app.delete('/blog_posts/:id', async (req: Request, res: Response): Promise<void>
 });
 
 // Comments endpoints
-app.get('/comments', async (_req: Request, res: Response): Promise<void> => {
+app.get('/api/comments', async (_req: Request, res: Response): Promise<void> => {
   try {
     const result = await pool.query<Comment>(`
       SELECT c.*, u.name as author_name, bp.title as blog_post_title 
@@ -204,7 +208,7 @@ app.get('/comments', async (_req: Request, res: Response): Promise<void> => {
   }
 });
 
-app.get('/comments/:id', async (req: Request, res: Response): Promise<void> => {
+app.get('/api/comments/:id', async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
     const result = await pool.query<Comment>(
@@ -228,7 +232,7 @@ app.get('/comments/:id', async (req: Request, res: Response): Promise<void> => {
   }
 });
 
-app.get('/blog_posts/:id/comments', async (req: Request, res: Response): Promise<void> => {
+app.get('/api/blog_posts/:id/comments', async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
     const result = await pool.query<Comment>(
@@ -248,7 +252,7 @@ app.get('/blog_posts/:id/comments', async (req: Request, res: Response): Promise
   }
 });
 
-app.post('/comments', async (req: Request, res: Response): Promise<void> => {
+app.post('/api/comments', async (req: Request, res: Response): Promise<void> => {
   try {
     const {
       content,
@@ -266,7 +270,7 @@ app.post('/comments', async (req: Request, res: Response): Promise<void> => {
   }
 });
 
-app.put('/comments/:id', async (req: Request, res: Response): Promise<void> => {
+app.put('/api/comments/:id', async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
     const { content }: { content: string } = req.body;
@@ -285,7 +289,7 @@ app.put('/comments/:id', async (req: Request, res: Response): Promise<void> => {
   }
 });
 
-app.delete('/comments/:id', async (req: Request, res: Response): Promise<void> => {
+app.delete('/api/comments/:id', async (req: Request, res: Response): Promise<void> => {
   try {
     const { id } = req.params;
     const result = await pool.query<Comment>('DELETE FROM comments WHERE id = $1 RETURNING *', [
@@ -300,6 +304,11 @@ app.delete('/comments/:id', async (req: Request, res: Response): Promise<void> =
     const message = err instanceof Error ? err.message : 'Unknown error';
     res.status(500).json({ error: message });
   }
+});
+
+// Serve React app for all non-API routes
+app.get('*', (_req: Request, res: Response) => {
+  res.sendFile(path.join(__dirname, '../../frontend-build/index.html'));
 });
 
 async function startServer(): Promise<void> {
