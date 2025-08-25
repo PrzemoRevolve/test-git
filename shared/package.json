@@ -1,0 +1,13 @@
+{
+  "name": "shared-types",
+  "version": "1.0.0",
+  "description": "Shared types for blog application",
+  "main": "types/index.js",
+  "types": "types/index.ts",
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  }
+}

@@ -4,7 +4,8 @@
   "description": "Simple NodeJS + PostgreSQL blog API",
   "main": "dist/server.js",
   "scripts": {
-    "build": "tsc",
+    "build": "npm run build:frontend && tsc",
+    "build:frontend": "cd ./frontend && npm run build && rm -rf ../frontend-build && cp -r dist ../frontend-build",
     "start": "node dist/server.js",
     "dev": "nodemon --exec ts-node src/server.ts",
     "dev:watch": "nodemon --watch src --ext ts --exec ts-node src/server.ts",
@@ -21,10 +22,10 @@
     "express": "^4.18.2",
     "pg": "^8.11.3",
     "uuid": "^11.1.0",
-    "zod": "^4.0.10"
+    "zod": "^4.0.10",
+    "ws": "^8.14.2"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.9.4",
     "@playwright/test": "^1.54.1",
     "@types/cors": "^2.8.14",
     "@types/express": "^4.17.20",
@@ -32,6 +33,8 @@
     "@types/pg": "^8.10.7",
     "nodemon": "^3.0.1",
     "ts-node": "^10.9.1",
-    "typescript": "^5.2.2"
+    "typescript": "^5.2.2",
+    "@types/ws": "^8.5.8",
+    "@biomejs/biome": "^1.9.4"
   }
 }
