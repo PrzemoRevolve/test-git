@@ -26,6 +26,7 @@ def get_blog_posts(db: Session = Depends(get_db)):
             "title": blog_post.title,
             "content": blog_post.content,
             "user_id": blog_post.user_id,
+            "like_counter": blog_post.like_counter,
             "created_at": blog_post.created_at,
             "updated_at": blog_post.updated_at,
             "author_name": author_name,
@@ -54,6 +55,7 @@ def get_blog_post(blog_post_id: int, db: Session = Depends(get_db)):
         "title": blog_post.title,
         "content": blog_post.content,
         "user_id": blog_post.user_id,
+        "like_counter": blog_post.like_counter,
         "created_at": blog_post.created_at,
         "updated_at": blog_post.updated_at,
         "author_name": author_name,
@@ -79,6 +81,7 @@ def create_blog_post(blog_post: BlogPostCreate, db: Session = Depends(get_db)):
         "title": db_blog_post.title,
         "content": db_blog_post.content,
         "user_id": db_blog_post.user_id,
+        "like_counter": blog_post.like_counter,
         "created_at": db_blog_post.created_at,
         "updated_at": db_blog_post.updated_at,
         "author_name": user.name,
@@ -93,6 +96,7 @@ def update_blog_post(blog_post_id: int, blog_post: BlogPostUpdate, db: Session =
 
     db_blog_post.title = blog_post.title
     db_blog_post.content = blog_post.content
+    db_blog_post.like_counter = blog_post.like_counter
     db.commit()
     db.refresh(db_blog_post)
 
@@ -104,6 +108,7 @@ def update_blog_post(blog_post_id: int, blog_post: BlogPostUpdate, db: Session =
         "title": db_blog_post.title,
         "content": db_blog_post.content,
         "user_id": db_blog_post.user_id,
+        "like_counter": blog_post.like_counter,
         "created_at": db_blog_post.created_at,
         "updated_at": db_blog_post.updated_at,
         "author_name": user.name if user else None,
