@@ -6,7 +6,11 @@ from ..models import BlogPost as BlogPostModel
 from ..models import User as UserModel
 from ..schemas import BlogPost, BlogPostCreate, BlogPostUpdate
 
+<<<<<<< HEAD
 router = APIRouter(prefix="/api/post", tags=["post"])
+=======
+router = APIRouter(prefix="/api/blog_post", tags=["blog_post"])
+>>>>>>> main
 
 
 @router.get("/", response_model=list[BlogPost])
