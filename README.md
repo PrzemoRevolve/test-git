@@ -20,6 +20,8 @@
 5. (See in github that there are conflicts for other branches)
 6. `git checkout feature/FEAT2-better-endpoint-names`
 7. `git pull`
+
+fdfdfd
 8. `git chekout main`
 9.  `git pull`
 10. `git merge feature/FEAT2-better-endpoint-names`
